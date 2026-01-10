@@ -1,0 +1,12 @@
+# MUSUBI Project Configuration
+name: portfolio-2026
+description: project for self-practice and learning in 2026
+locale: ja
+version: "0.1.0"
+created: 2026-01-10
+
+# Technology Stack
+tech_stack:
+  approach: undecided
+  languages:
+    - undecided  # To be determined
