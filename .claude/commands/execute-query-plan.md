@@ -22,27 +22,52 @@ This command creates a **safe execution workflow** for SQL queries designed by `
 
 ## Your Task
 
+### Step 0: Extract Metadata from Query (if available)
+
+**CRITICAL: Check for @query-metadata comments first**
+
+Before asking questions, check if the query contains `@query-metadata` comments:
+
+```sql
+-- @query-metadata
+-- purpose: 過去30日間の売上トップ10商品
+-- database: PostgreSQL 15
+-- environment: production
+-- created_by: @query-designer
+-- created_at: 2026-01-12 18:00:00
+```
+
+**If metadata found**:
+1. Extract all metadata fields
+2. Skip corresponding questions
+3. Only ask for missing information
+
+**If no metadata found**:
+1. Proceed with Step 1 (ask all questions)
+
 ### Step 1: Collect Query Information
 
 Ask the user for the following information **one question at a time**:
+
+**IMPORTANT**: Skip questions if metadata was already extracted in Step 0.
 
 ```
 こんにちは！SQLクエリ実行計画を生成します。
 いくつか質問させてください。
 
-【質問 1/5】実行するSQLクエリを教えてください。
+【質問 1/N】実行するSQLクエリを教えてください。
 @query-designerで設計したクエリをそのまま貼り付けてください。
 
 👤 ユーザー: [回答待ち]
 ```
 
-**Questions to ask (one at a time)**:
+**Questions to ask (one at a time, skip if metadata exists)**:
 
 1. **SQL Query**: The query to execute (from @query-designer or user-provided)
-2. **Query Purpose**: Brief description (e.g., "売上トップ10商品の取得")
-3. **Target Environment**: dev, staging, or production
-4. **Database Type**: PostgreSQL, MySQL, SQLite, SQL Server
-5. **Database Version**: e.g., PostgreSQL 15, MySQL 8.0
+2. **Query Purpose**: Brief description (skip if `purpose` in metadata)
+3. **Target Environment**: dev, staging, or production (skip if `environment` in metadata)
+4. **Database Type**: PostgreSQL, MySQL, SQLite, SQL Server (skip if `database` in metadata)
+5. **Database Version**: e.g., PostgreSQL 15, MySQL 8.0 (skip if `database` in metadata)
 
 ### Step 2: Validate Query Safety
 

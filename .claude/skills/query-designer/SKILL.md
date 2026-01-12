@@ -3,7 +3,7 @@ name: query-designer
 description: |
   SQL Query Designer skill that generates optimized SQL queries from natural language requests and table schemas.
   
-  Trigger terms: SQL, query, database query, SELECT, JOIN, schema, table, クエリ, データベース, テーブル, 検索, 抽出
+  Trigger terms: SQL, query, database, SELECT, JOIN, INSERT, UPDATE, DELETE, WHERE, GROUP BY, ORDER BY, LIMIT, schema, table, index, クエリ, データベース, テーブル, 検索, 抽出, 取得, 集計, 分析, 統計, レポート, 売上, ユーザー, 商品, 注文, データ, 情報
   
   Use when: User needs help designing SQL queries, optimizing database queries, or translating natural language requests into SQL.
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -94,15 +94,17 @@ These files contain the project's "memory" - shared context that ensures consist
 - ユーザーが回答してから次の質問に進む
 - 各質問の後には必ず `👤 ユーザー: [回答待ち]` を表示
 
-### Phase 1: スキーマ情報の収集
+### Phase 1: データベース環境の確認
 
-ユーザーからテーブルスキーマ情報を収集します。**1問ずつ**質問し、回答を待ちます。
+**CRITICAL: 最初にデータベース情報を収集**
+
+クエリ設計の前に、データベース環境を確認します。**1問ずつ**質問し、回答を待ちます。
 
 ```
 こんにちは！SQLクエリデザイナーです。
 最適なクエリを設計するために、いくつか質問させてください。
 
-【質問 1/5】使用しているデータベースは何ですか？
+【質問 1/7】使用しているデータベースは何ですか？
 例: PostgreSQL 15, MySQL 8.0, SQLite 3.40, SQL Server 2022
 
 👤 ユーザー: [回答待ち]
@@ -110,11 +112,13 @@ These files contain the project's "memory" - shared context that ensures consist
 
 **質問リスト (1問ずつ順次実行)**:
 
-1. データベースの種類とバージョン
-2. テーブルスキーマの提供方法（DDL, ER図, 自然言語説明）
-3. 対象テーブルの情報（テーブル名、カラム、データ型、制約）
-4. テーブル間のリレーション（外部キー、関連性）
-5. データ量の規模（行数、テーブルサイズ）
+1. **データベースの種類とバージョン** (必須)
+2. **対象環境** (dev/staging/production)
+3. テーブルスキーマの提供方法（DDL, ER図, 自然言語説明）
+4. 対象テーブルの情報（テーブル名、カラム、データ型、制約）
+5. テーブル間のリレーション（外部キー、関連性）
+6. データ量の規模（行数、テーブルサイズ）
+7. クエリの目的（何を取得したいか）
 
 ### Phase 2: クエリ要件の理解
 
@@ -151,7 +155,13 @@ These files contain the project's "memory" - shared context that ensures consist
 ## 1. 基本クエリ
 
 \`\`\`sql
--- 過去30日間の売上トップ10商品
+-- @query-metadata
+-- purpose: 過去30日間の売上トップ10商品
+-- database: PostgreSQL 15
+-- environment: production
+-- created_by: @query-designer
+-- created_at: 2026-01-12 18:00:00
+
 SELECT 
     p.product_id,
     p.product_name,
@@ -169,6 +179,14 @@ ORDER BY
     total_sales DESC
 LIMIT 10;
 \`\`\`
+
+**メタデータ説明**:
+- `@query-metadata`: このクエリのメタデータマーカー
+- `purpose`: クエリの目的（/execute-query-planで再利用）
+- `database`: データベース種類とバージョン
+- `environment`: 対象環境
+- `created_by`: 生成元スキル
+- `created_at`: 生成日時
 
 ## 2. クエリの説明
 
