@@ -10,8 +10,10 @@ infra/
 │   ├── dev/
 │   │   ├── network/           # Component: Network
 │   │   │   ├── main.tf        # Calls module-network
-│   │   │   ├── backend.tf
-│   │   │   └── variables.tf
+│   │   │   ├── backend.tf     # S3 backend config (Required)
+│   │   │   ├── providers.tf   # Versions & Providers
+│   │   │   ├── variables.tf   # Environment specific inputs
+│   │   │   └── outputs.tf     # Component outputs
 │   │   └── app-cluster/       # Component: App Cluster
 │   │       └── ...
 │   ├── stg/
@@ -20,84 +22,87 @@ infra/
 └── modules/                   # Reusable logic (Producers)
     ├── network/               # Module: Network
     │   ├── main.tf            # Resource definitions
-    │   ├── variables.tf       # Inputs
-    │   └── outputs.tf         # Outputs
+    │   ├── variables.tf       # Inputs (Interface)
+    │   ├── outputs.tf         # Outputs (Interface)
+    │   └── providers.tf       # Provider requirements (versions)
     └── app-cluster/
         └── ...
 ```
 
-## Design Philosophy: "Component-First, Module-Driven"
+## Mandatory File Structure
 
-1.  **Start with the Goal**: Define what infrastructure component you need (e.g., "I need an ECS cluster").
-2.  **Modularize by Default**: Even if used once, wrap logic in a module in `infra/modules/`.
-3.  **Instantiate in Envs**: The code in `infra/envs/` should primarily consist of `module` blocks and necessary `provider`/`terraform` configurations.
+Every component and module MUST contain the following files:
+
+| File | Purpose | Requirement |
+|------|---------|-------------|
+| `main.tf` | Primary logic / Module instantiation | **Mandatory** |
+| `variables.tf` | Input definitions with types & descriptions | **Mandatory** |
+| `outputs.tf` | Output definitions (interface for other components) | **Mandatory** |
+| `providers.tf` | Terraform/Provider version constraints | **Mandatory** |
+| `backend.tf` | State management configuration | **Mandatory for Envs** |
+
+---
+
+## State Management Standard
+
+**Strict Rule**: All environment components MUST use S3 Backend with DynamoDB locking.
+
+### `backend.tf` Template
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "my-tfstate-bucket"
+    key            = "envs/${var.env}/${var.component}/terraform.tfstate"
+    region         = "ap-northeast-1"
+    dynamodb_table = "my-tfstate-lock"
+    encrypt        = true
+  }
+}
+```
+
+---
+
+## Lifecycle Management Patterns (Day 2 Ops)
+
+Designs must consider future updates and maintenance.
+
+### 1. Database Upgrades (RDS/Aurora)
+- **Auto Minor Version Upgrade**: Explicitly set.
+    - Dev: `true` (Test new versions automatically)
+    - Prod: `false` (Control update timing)
+- **Maintenance Window**: Must be defined explicitly.
+    - Example: `backup_window = "03:00-04:00"`, `maintenance_window = "mon:04:00-mon:05:00"`
+
+### 2. Resource Naming (Immutability)
+- Avoid reusing names when resource replacement is required.
+- Use `name_prefix` where possible to allow zero-downtime replacement (create before destroy).
+
+### 3. Protection
+- **Deletion Protection**: Enable for stateful resources (RDS, S3, ALB logs) in Production.
+- **Lifecycle Block**: Use `lifecycle { prevent_destroy = true }` for critical data stores.
+
+---
+
+## Non-Functional Requirements (NFR) Checklist
+
+Design must address these 6 pillars:
+
+1.  **Operational Excellence**: Tagging strategies, CloudWatch logs.
+2.  **Security**: Private subnets by default, minimal Security Group rules, Encryption at rest (KMS).
+3.  **Reliability**: Multi-AZ for Prod, Auto-scaling.
+4.  **Performance Efficiency**: Right-sizing instances (e.g., t3 for dev, m5 for prod).
+5.  **Cost Optimization**: Spot instances for stateless workloads, GP3 over GP2.
+6.  **Sustainability**: Use Graviton (ARM) instances where possible.
 
 ---
 
 ## Naming Conventions
 
-- **Directories**: `kebab-case` (e.g., `vpc-network`, `app-server`)
+- **Directories**: `kebab-case` (e.g., `vpc-network`)
 - **Resources**: `snake_case` (e.g., `aws_s3_bucket.log_bucket`)
-- **Variables**: `snake_case` (e.g., `instance_type`, `environment`)
-- **Outputs**: `snake_case` (e.g., `bucket_arn`, `vpc_id`)
+- **Variables**: `snake_case` (e.g., `instance_type`)
+- **Outputs**: `snake_case` (e.g., `db_endpoint`)
 
----
-
-## Template: Module (`infra/modules/xxx/`)
-
-### `main.tf`
-```hcl
-resource "aws_s3_bucket" "this" {
-  bucket = var.bucket_name
-  tags   = var.tags
-}
-
-# ... other resources
-```
-
-### `variables.tf`
-```hcl
-variable "bucket_name" {
-  description = "Name of the S3 bucket"
-  type        = string
-}
-
-variable "tags" {
-  description = "Tags to apply to resources"
-  type        = map(string)
-  default     = {}
-}
-```
-
-### `outputs.tf`
-```hcl
-output "bucket_arn" {
-  description = "ARN of the created bucket"
-  value       = aws_s3_bucket.this.arn
-}
-```
-
----
-
-## Template: Component (`infra/envs/{env}/xxx/`)
-
-### `main.tf`
-```hcl
-module "s3_bucket" {
-  source = "../../../modules/s3-bucket"  # Relative path to module
-
-  bucket_name = "my-app-${var.environment}-assets"
-  tags        = local.tags
-}
-```
-
-### `backend.tf` (Example for S3 backend)
-```hcl
-terraform {
-  backend "s3" {
-    bucket = "my-tfstate-bucket"
-    key    = "envs/dev/assets/terraform.tfstate"
-    region = "ap-northeast-1"
-  }
-}
-```
+### Resource Name Format
+`{project}-{env}-{component}-{resource}`
+Example: `portfolio-prod-api-app_server`

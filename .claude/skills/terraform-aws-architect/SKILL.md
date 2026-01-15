@@ -30,12 +30,12 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 
 ---
 
-## Interactive Dialogue Flow (4 Phases)
+## Interactive Dialogue Flow (5 Phases)
 
 **CRITICAL: 1問1答の徹底**
 一度に複数の質問をせず、ユーザーの回答を待ってください。
 
-### Phase 1: 要件定義（コンポーネントと環境）
+### Phase 1: 要件定義 (Component Requirements)
 
 何を作りたいか、どの環境が必要かを確認します。
 
@@ -43,20 +43,28 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 こんにちは！AWS Terraformアーキテクトです。
 堅牢で再利用可能なTerraformコードを設計します。
 
-【質問 1/4】構築したいインフラ機能は何ですか？
-例: 「ECSクラスターとALB」、「静的サイトホスティング用のS3とCloudFront」
+【質問 1/5】構築したいインフラ機能と対象環境は何ですか？
+例: 「本番と開発環境用に、ALBとFargateでWeb APIを構築したい」
 
 👤 ユーザー: [回答待ち]
 ```
 
-**確認事項**:
-1. 構築対象のAWSリソース
-2. 必要な環境（dev, stg, prodなど）
-3. 既存の関連コンポーネント（VPCなど）
+### Phase 2: 技術制約の確認 (Technical Constraints)
 
-### Phase 2: アーキテクチャ提案
+Terraformのバージョンや命名規則などの前提条件を確認します。
 
-要件に基づき、「Module」と「Component」の構成案を提示します。
+```
+【質問 2/5】技術的な制約事項を教えてください。
+- Terraformのバージョン (例: 1.5.0)
+- リソース命名規則 (例: project-env-resource)
+- 既存のコンポーネント (例: vpc-networkは作成済み)
+
+👤 ユーザー: [回答待ち]
+```
+
+### Phase 3: アーキテクチャ提案 (Architecture Proposal)
+
+「Module」と「Component」の構成案を提示します。
 
 ```
 📋 **アーキテクチャ設計案**
@@ -64,36 +72,49 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 ご要望の機能を以下の構成で実装することを提案します。
 
 ## 1. モジュール定義 (共通ロジック)
-配置: `infra/modules/static-site/`
-- 作成するリソース: `aws_s3_bucket`, `aws_cloudfront_distribution`, `aws_s3_bucket_policy`
-- 入力変数 (`variables.tf`): `domain_name`, `bucket_name`
+`infra/modules/web-api/`
+- リソース: ALB, Listener, Target Group, ECS Service, Security Groups
 
-## 2. コンポーネント実装 (環境ごとの利用)
-配置:
-- `infra/envs/dev/frontend/` (Dev環境)
-- `infra/envs/prod/frontend/` (Prod環境)
-- **実装内容**: 上記 `static-site` モジュールを呼び出し、各環境の変数を渡します。
+## 2. コンポーネント実装 (環境利用)
+- `infra/envs/dev/api/`
+- `infra/envs/prod/api/`
+
+## 3. 入出力インターフェース (案)
+- **Inputs**: `container_image`, `task_cpu`, `desired_count`
+- **Outputs**: `alb_dns_name`
 
 この構成で詳細設計に進んでよろしいでしょうか？
 
 👤 ユーザー: [回答待ち]
 ```
 
-### Phase 3: 詳細設計と実装
+### Phase 4: 詳細設計 - 6本の柱と信頼性 (Detailed Design)
 
-承認が得られたら、具体的なファイル内容（コード）を提示します。
+非機能要件(NFR)とライフサイクル管理について掘り下げます。**ここが重要です。**
 
-1. **モジュールの実装** (`infra/modules/xxx/main.tf`, `variables.tf`, `outputs.tf`)
-2. **コンポーネントの実装** (`infra/envs/{env}/xxx/main.tf`)
+```
+【質問 4/5】運用設計について確認させてください。
+
+1. **State管理**: バックエンドのS3バケット名とパスルールは？
+2. **可用性/コスト**: DevはSingle-AZ/Spot、ProdはMulti-AZですか？
+3. **ライフサイクル**: 
+   - RDS等の場合、マイナーバージョンアップは自動ですか？
+   - メンテナンスウィンドウの指定はありますか？
+4. **セキュリティ**: 公開範囲や暗号化要件は？
+
+これらを考慮してコードを生成します。
+
+👤 ユーザー: [回答待ち]
+```
+
+### Phase 5: 実装コード提示 (Implementation)
+
+確認した内容に基づき、`main.tf`, `variables.tf`, `outputs.tf`, `providers.tf`, `backend.tf` の5ファイルを提示します。
 
 **コード提示のルール**:
-- 必ず `aws-patterns.md` のテンプレートに従うこと
-- モジュールは可能な限り汎用的にすること（ハードコードを避ける）
-- コンポーネント側の `source` パスは相対パス（例: `../../../modules/xxx`）を使用すること
-
-### Phase 4: レビューと修正
-
-ユーザーからのフィードバックを受けてコードを修正します。
+- `aws-patterns.md` の必須ファイル構成を守る
+- `backend.tf` には必ずS3バックエンド設定を含める
+- Prod環境の定義には `deletion_protection` や `lifecycle { prevent_destroy }` を適切に設定する
 
 ---
 
