@@ -37,7 +37,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | **Orchestration** (3)               | @orchestrator, @steering, @constitution-enforcer                                                              |
 | **Requirements & Planning** (3)     | @requirements-analyst, @project-manager, @change-impact-analyzer                                              |
-| **Architecture & Design** (4)       | @system-architect, @api-designer, @database-schema-designer, @ui-ux-designer                                  |
+| **Architecture & Design** (5)       | @system-architect, @api-designer, @database-schema-designer, @query-designer, @ui-ux-designer                 |
 | **Development** (1)                 | @software-developer                                                                                           |
 | **Quality & Review** (5)            | @test-engineer, @code-reviewer, @bug-hunter, @quality-assurance, @traceability-auditor                        |
 | **Security & Performance** (2)      | @security-auditor, @performance-optimizer                                                                     |
@@ -389,7 +389,28 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 16. @requirements-analyst
+## 16. @query-designer
+
+**Role**: SQL Query Designer
+
+**Description**: SQL Query Designer skill that generates optimized SQL queries from natural language requests and table schemas.
+
+**Category**: Architecture
+
+**Example Usage**:
+
+```text
+@query-designer Design SQL query to get top 10 best-selling products in the last 30 days
+```
+
+**Platform-Specific Usage**:
+
+- **Claude Code**: `@query-designer` (Skills API)
+- **Other Platforms**: Reference this AGENTS.md file and describe the agent's role in your request
+
+---
+
+## 17. @requirements-analyst
 
 **Role**: Requirements Analyst AI
 
@@ -410,7 +431,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 17. @security-auditor
+## 18. @security-auditor
 
 **Role**: Security Auditor AI
 
@@ -437,7 +458,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 18. @site-reliability-engineer
+## 19. @site-reliability-engineer
 
 **Role**: Site Reliability Engineer
 
@@ -458,7 +479,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 19. @software-developer
+## 20. @software-developer
 
 **Role**: Software Developer
 
@@ -486,7 +507,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 20. @steering
+## 21. @steering
 
 **Role**: Steering
 
@@ -513,7 +534,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 21. @system-architect
+## 22. @system-architect
 
 **Role**: System Architect AI
 
@@ -540,7 +561,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 22. @technical-writer
+## 23. @technical-writer
 
 **Role**: Technical Writer
 
@@ -561,7 +582,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 23. @test-engineer
+## 24. @test-engineer
 
 **Role**: Test Engineer
 
@@ -588,7 +609,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 24. @traceability-auditor
+## 25. @traceability-auditor
 
 **Role**: Traceability Auditor
 
@@ -615,7 +636,7 @@ When CodeGraphMCPServer is available, agents can leverage these tools for enhanc
 
 ---
 
-## 25. @ui-ux-designer
+## 26. @ui-ux-designer
 
 **Role**: UI/UX Designer AI
 
