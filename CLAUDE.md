@@ -1,7 +1,8 @@
 # MUSUBI - portfolio-2026
 
 project for self-practice and learning in 2026
-
+## Permission Rule for AI Agent 
+- DO NOT git commit or push without human approve!
 ## Initialized with MUSUBI SDD for Claude Code
 
 This project uses **MUSUBI** (Ultimate Specification Driven Development) with 8 skill groups.
