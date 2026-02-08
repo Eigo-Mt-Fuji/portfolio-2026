@@ -33,6 +33,34 @@ Check `.claude/skills/` directory for all installed skills.
 - [Constitutional Governance](steering/rules/constitution.md)
 - [8-Stage SDD Workflow](steering/rules/workflow.md)
 
+### Cursor Rules
+
+```
+{
+  "version": 1,
+  "editor": {
+    "vimMode": false
+  },
+  "hasChangedDefaultModel": false,
+  "permissions": {
+    "allow": [
+      "Shell(ls)",
+      "Shell()",
+      "Read("/*)"
+    ],
+    "deny": [
+      "Shell(rm -rf *)",
+      "Shell(git push)",
+      "Read(src/envs/*)"
+    ]
+  },
+  "network": {
+    "useHttp1ForAgent": false
+  }
+}
+
+```
+
 ---
 
 **Agent**: Claude Code
