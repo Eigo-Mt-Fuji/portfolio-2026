@@ -1,7 +1,8 @@
 # MUSUBI - portfolio-2026
 
 project for self-practice and learning in 2026
-
+## Permission Rule for AI Agent 
+- DO NOT git commit or push without human approve!
 ## Initialized with MUSUBI SDD for Claude Code
 
 This project uses **MUSUBI** (Ultimate Specification Driven Development) with 8 skill groups.
@@ -32,6 +33,34 @@ Check `.claude/skills/` directory for all installed skills.
 - [MUSUBI Documentation](https://github.com/your-org/musubi)
 - [Constitutional Governance](steering/rules/constitution.md)
 - [8-Stage SDD Workflow](steering/rules/workflow.md)
+
+### Cursor Rules
+
+```
+{
+  "version": 1,
+  "editor": {
+    "vimMode": false
+  },
+  "hasChangedDefaultModel": false,
+  "permissions": {
+    "allow": [
+      "Shell(ls)",
+      "Shell()",
+      "Read("/*)"
+    ],
+    "deny": [
+      "Shell(rm -rf *)",
+      "Shell(git push)",
+      "Read(src/envs/*)"
+    ]
+  },
+  "network": {
+    "useHttp1ForAgent": false
+  }
+}
+
+```
 
 ---
 
