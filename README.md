@@ -91,3 +91,8 @@ Claudeの定義済みスキルとは。スキルとはどんな実装になる�
     学びをファイルに残さない → 進捗や結果をファイルに書き、次回そこから始める。
 ```
 
+## 実践
+
+- https://github.com/Eigo-Mt-Fuji/claude-context-mng
+- https://github.com/Eigo-Mt-Fuji/tfplan-loop-eng-sample
+
