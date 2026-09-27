@@ -48,7 +48,7 @@ Claudeの定義済みスキルとは。スキルとはどんな実装になる�
     https://github.com/anthropics/skills/tree/main
     https://code.claude.com/docs/en/skills
 
-ループエンジニアリングの要素 https://qiita.com/nogataka/items/bad6d9e769d9a0e41c19
+ループエンジニアリングの他の要素概念 https://qiita.com/nogataka/items/bad6d9e769d9a0e41c19
     トリガー いつ依頼するか
         「あなたが頼んだとき」「毎週金曜の朝」のような時刻
         「PRにラベルが付いたら」のようなイベントが該当
@@ -73,13 +73,12 @@ Claudeの定義済みスキルとは。スキルとはどんな実装になる�
 
 ループエンジニアリングの要素 https://zenn.dev/suwash/articles/loop-engineering_20260610
 
-Automations / Scheduling	定期または条件に基づいてループをトリガーする制御層
-Worktrees	並列実行を安全に行うための隔離されたコピー作業空間
-Skills	作業手順・ドメイン知識を永続化した再利用可能な知識単位
-Plugins / Connectors - MCP	MCP プロトコルを通じて外部サービスやツールと接続する統合レイヤ
-Sub-agents	実装担当（Implementer）と検証担当（Verifier）に役割を分離したエージェント群
-Memory / State	セッションをまたいで状態を保持する外部永続ストア（ファイル・DB）
-
+　　トリガー(Automations / Scheduling)	定期または条件に基づいてループをトリガーする制御層
+　　外部統合レイヤー(Plugins / Connectors) - MCP	MCP プロトコルを通じて外部サービスやツールと接続する統合レイヤ
+　　Sub-agents	実装担当（Implementer）と検証担当（Verifier）に役割を分離したエージェント群
+　　Skills	作業手順・ドメイン知識を永続化した再利用可能な知識単位
+　　Memory / State	セッションをまたいで状態を保持する外部永続ストア（ファイル・DB）
+　　Worktrees	並列実行を安全に行うための隔離されたコピー作業空間
 
 ループにすべきでないとき・つまずきポイント
     1回で終わる作業: やり直しが要らないなら、ループはむだな手間です。
